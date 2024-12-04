@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+        }
+
+        #flex-container {
+            display: flex;
+            width: 80%;
+            max-width: 1080px;
+        }
+
+        #phaser-game {
+            flex: 1;
+            padding-right: 20px;
+            background-color: #eaeaea; /* 添加背景色以便查看 */
+        }
+
+        #right-panel {
+            flex: 0 0 680px; /* 宽度为300px */
+            padding-left: 20px;
+            background-color: #f4f4f4;
+        }
+    </style>
+        
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.55.2/phaser.min.js"></script>
+    <script>
+        async function loadImage(url, containerId) {
+            try {
+                // 请求图片
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error('网络请求失败');
+                }
+
+                // 获取图片数据并生成一个Blob对象
+                const imageBlob = await response.blob();
+                const imageObjectUrl = URL.createObjectURL(imageBlob);
+
+                // 创建 img 标签并设置 src 为获取到的 URL
+                const imgElement = document.createElement('img');
+                imgElement.src = imageObjectUrl;
+
+                // 将图片插入到指定容器中
+                document.getElementById(containerId).appendChild(imgElement);
+            } catch (error) {
+                console.error('加载图片失败:', error);
+            }
+        }
+        async function sendData(url,p1,p2,type) {
+            const data = {
+                p1: p1,
+                p2: p2,
+                type: type
+            };
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST', // 请求方法
+                    headers: {
+                        'Content-Type': 'application/json' // 设置请求体格式为 JSON
+                    },
+                    body: JSON.stringify(data) // 将 JavaScript 对象转换为 JSON 字符串
+                });
+
+                // 处理响应
+                if (response.ok) {
+                    const result = await response.json();
+                    console.log('服务器响应:', result);
+                    document.getElementById("result_text").appendChild(result);
+                } else {
+                    console.error('请求失败', response.status);
+                }
+            } catch (error) {
+                console.error('发送数据时出错:', error);
+            }
+        }
+        function get_result(type,p1,p2)
+        {
+            const url = '127.0.0.1';
+            const url1 = '127.0.0.1/image1.jpg';
+            const url2 = '127.0.0.1/image2.jpg';
+            sendData(url,p1,p2,type);
+            loadImage(url1, 'image1');
+            loadImage(url2, 'image2');
+            //0/1 N输入 的第1/2张
+            //2/3 P输出 的第1/2张
+        }
+    </script>
+</head>
+<body>
+    <div id="flex-container">
+        <!-- Phaser 游戏容器 -->
+        <div id="phaser"></div>
+
+        <div id="right-panel">
+            <h2>结果展示</h2>
+            <p id="result_text"></p>
+            <div id="image1"></div>
+            <div id="image2"></div>
+        </div>
+    </div>
+
+    <script src="/front_end/src/main.js"></script> <!-- Phaser 游戏将会在这里 -->
+</body>
+</html>
