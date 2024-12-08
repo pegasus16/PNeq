@@ -29,12 +29,12 @@ function preload() {
 
 function create() {
     // window.updateHtmlElement('Game has started!');
-    this.add.text(100, 200, "电路1", {
+    this.add.text(100, 200, "电路F", {
         fontSize: '24px',
         color: '#000000',
         fontFamily: 'Microsoft YaHei, sans-serif'
     }).setOrigin(0.5);
-    this.add.text(300, 200, "电路2", {
+    this.add.text(300, 200, "电路G", {
         fontSize: '24px',
         color: '#000000',
         fontFamily: 'Microsoft YaHei, sans-serif'

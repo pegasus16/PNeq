@@ -26,15 +26,28 @@
         }
 
         #right-panel {
-            flex: 0 0 680px; /* 宽度为300px */
+            flex: 0 0 680px; /* 宽度为680px */
             padding-left: 20px;
             background-color: #f4f4f4;
+            
+            max-height: 720px; /* 根据你的布局需求设置 */
+            overflow-y: auto; /* 自动显示垂直滚动条 */
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* 水平居中图片 */
+        }
+        #right-panel img {
+            display: block; /* 避免底部间隙 */
+            max-width: 100%; /* 图片不超过其容器 */
+            height: auto; 
+            margin: 10px 0; /* 添加上下边距使图片间有间隔 */
         }
     </style>
         
     <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.55.2/phaser.min.js"></script>
     <script>
         async function loadImage(url, containerId) {
+            console.info("loadImage");
             try {
                 // 请求图片
                 const response = await fetch(url);
@@ -46,16 +59,35 @@
                 const imageBlob = await response.blob();
                 const imageObjectUrl = URL.createObjectURL(imageBlob);
 
-                // 创建 img 标签并设置 src 为获取到的 URL
-                const imgElement = document.createElement('img');
-                imgElement.src = imageObjectUrl;
+                var container = document.getElementById(containerId);
 
-                // 将图片插入到指定容器中
-                document.getElementById(containerId).appendChild(imgElement);
-            } catch (error) {
-                console.error('加载图片失败:', error);
-            }
+                // // 创建 img 标签并设置 src 为获取到的 URL
+                // const imgElement = document.createElement('img');
+                // imgElement.src = imageObjectUrl;
+
+                // 尝试获取容器中的第一个 img 元素
+                var imgElement = container.querySelector('img');
+
+                if (imgElement) 
+                {
+                    console.info("new img");
+                    // 如果 img 存在，则更新其 src 属性
+                    imgElement.src = imageObjectUrl;
+                } else 
+                {
+                    console.info("update img");
+                    // 如果 img 不存在，则创建一个新的 img 元素，并设置其 src 属性
+                    imgElement = document.createElement('img');
+                    imgElement.src = imageObjectUrl;
+
+                    // 将新创建的 img 元素添加到容器中
+                    container.appendChild(imgElement);
+                }
+                } catch (error) {
+                    console.error('加载图片失败:', error);
+                }
         }
+
         async function sendData(url,p1,p2,type) {
             const data = {
                 p1: p1,
@@ -104,9 +136,16 @@
 
         <div id="right-panel">
             <h2>结果展示</h2>
-            <p id="result_text"></p>
+            <h4 id="result_text">是P等价的</h4>
             <div id="image1"></div>
             <div id="image2"></div>
+            <div id="image3"></div>
+            <script>
+                loadImage('/ansf.png','image1');
+                loadImage('/ansf.png','image2');
+                loadImage('/ansf.png','image1');
+                loadImage('/ansf.png','image2');
+            </script>
         </div>
     </div>
 
