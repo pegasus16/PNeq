@@ -3,6 +3,7 @@ from collections import Counter
 from qiskit import circuit as Qcir
 from qiskit import QuantumRegister, ClassicalRegister
 from qiskit.primitives import StatevectorSampler
+import matplotlib.pyplot as plt
 def getMat(n,li):
     mat=np.zeros([2**n,2**n])
     for i in range(2**n):
@@ -33,7 +34,7 @@ swp = []
 #     res = job.result()[0].data['c']
 #     return Counter(res.get_bitstrings())
 def DJtry(fgate : Qcir.Gate, ggate : Qcir.Gate, n : int, fi : int, gi : int):
-    qb = QuantumRegister(3 * n + 1)
+    qb = QuantumRegister(3 * n + 1, "q")
     cb = ClassicalRegister(n, 'c')
     prog = Qcir.QuantumCircuit(qb, cb)
     prog.h(range(n, 2 * n))
@@ -50,6 +51,8 @@ def DJtry(fgate : Qcir.Gate, ggate : Qcir.Gate, n : int, fi : int, gi : int):
     prog.measure(range(n, 2 * n), cb)
     if fi == 0 and gi == 0:
         print(prog)
+        prog.draw('mpl').savefig('optP.png')
+        # plt.pause(-1)
     # print(prog)
     job = StatevectorSampler().run([prog], shots = 1)
     res = job.result()[0].data['c']
@@ -66,6 +69,7 @@ def solve(fgate : Qcir.Gate, ggate : Qcir.Gate, n : int):
                 else:
                     ans[i] = j
     print(ans)
+    return ans
 def getGate(mat : np.ndarray, n : int, swp = [], name  : str = "BF"):
     prog = Qcir.QuantumCircuit(2 * n)
     prog.unitary(mat, range(n))
@@ -77,7 +81,7 @@ def getGate(mat : np.ndarray, n : int, swp = [], name  : str = "BF"):
         prog.swap(pr[0] + n, n + pr[1])
     prog.unitary(mat, range(n)).inverse()
     return prog.to_gate(label = name)
-n = 4
+n = 3
 plist = np.random.permutation(n).tolist()
 print("plist",plist)
 fli = np.random.permutation(range(2**n)).tolist()

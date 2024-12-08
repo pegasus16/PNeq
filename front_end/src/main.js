@@ -23,8 +23,8 @@ let startX = 0;
 let startY = 0;
 
 function preload() {
-    this.load.image('node', 'images/node.png');  // Placeholder image for nodes
-    this.load.image('node2', 'images/node2.png');  // Placeholder image for nodes
+    this.load.image('node', 'front_end/images/node.png');  // Placeholder image for nodes
+    this.load.image('node2', 'front_end/images/node2.png');  // Placeholder image for nodes
 }
 
 function create() {

@@ -12,7 +12,7 @@ def getMat(n,li):
 TRYCNT = 100
 swp = []
 def Simon(fgate : Qcir.Gate, ggate : Qcir.Gate, n : int):
-    print(type(fgate))
+    # print(type(fgate))
     qb = QuantumRegister(4 * n + 1)
     cb = ClassicalRegister(n, 'c')
     prog = Qcir.QuantumCircuit(qb, cb)
@@ -104,27 +104,88 @@ def getGate(mat : np.ndarray, n : int, oswp = [], ineg = [], name  : str = "BF")
     for i in ineg:
         prog.x(i)
     return prog.to_gate(label = name)
-n = 3
-neg = np.random.randint(2**n)
-fli = np.random.permutation(range(2**n)).tolist()
-gli = []
-for i in range(2**n):
-    gli.append(fli[i ^ neg])
-print("fli:",fli)
-print("gli:",gli)
-matf = getMat(n,fli)
-matg = getMat(n,gli)
-print(np.int64(np.real(matf)))
-print(np.int64(np.real(matg)))
+def inputN(n : int, fli : list, gli : list) -> bool:
+    for i in range(2 ** n):
+        if gli[i] == fli[0]:
+            neg = i
+            break
+    print("neg", f'{neg:0>{n}b}')
+    for i in range(2 ** n):
+        if gli[i ^ neg] != fli[i]:
+            return False
+    matf = getMat(n,fli)
+    matg = getMat(n,gli)
+    # print(np.int64(np.real(matf)))
+    # print(np.int64(np.real(matg)))
 
-fgate = getGate(matf, n, name="F")
-ggate = getGate(matg, n, name="G")
+    fgate = getGate(matf, n, name="F")
+    ggate = getGate(matg, n, name="G")
 
-import time
-nowT = time.time()
-MYans = solve(fgate, ggate, n)
-endT = time.time()
-print("neg", f'{neg:0>{n}b}')
-print("ans", f'{MYans:0>{n}b}')
-print(endT - nowT)
-input("press any key")
+    import time
+    nowT = time.time()
+    MYans = solve(fgate, ggate, n)
+    endT = time.time()
+    print("ans", f'{MYans:0>{n}b}')
+    print(endT - nowT)
+    # input("press any key")
+
+    qf = QuantumRegister(n * 2, "q")
+    progf = Qcir.QuantumCircuit(qf)
+    progf.append(fgate, qf[:])
+    # print(progf)
+    progf.draw('mpl').savefig('ansf.png')
+
+    qg = QuantumRegister(n * 2, "q")
+    progg = Qcir.QuantumCircuit(qg)
+    for i in range(n):
+        if MYans & (2 ** i):
+            progg.x(i)
+    progg.append(ggate, qg[:])
+    for i in range(n):
+        if MYans & (2 ** i):
+            progg.x(i)
+    # print(progg)
+    progg.draw('mpl').savefig('ansg.png')
+    return True
+# n = 3
+# neg = np.random.randint(2**n)
+# fli = np.random.permutation(range(2**n)).tolist()
+# gli = []
+# for i in range(2**n):
+#     gli.append(fli[i ^ neg])
+# print("fli:",fli)
+# print("gli:",gli)
+# matf = getMat(n,fli)
+# matg = getMat(n,gli)
+# print(np.int64(np.real(matf)))
+# print(np.int64(np.real(matg)))
+
+# fgate = getGate(matf, n, name="F")
+# ggate = getGate(matg, n, name="G")
+
+# import time
+# nowT = time.time()
+# MYans = solve(fgate, ggate, n)
+# endT = time.time()
+# print("neg", f'{neg:0>{n}b}')
+# print("ans", f'{MYans:0>{n}b}')
+# print(endT - nowT)
+# # input("press any key")
+
+# qf = QuantumRegister(n * 2, "q")
+# progf = Qcir.QuantumCircuit(qf)
+# progf.append(fgate, qf[:])
+# # print(progf)
+# progf.draw('mpl').savefig('ansf.png')
+
+# qg = QuantumRegister(n * 2, "q")
+# progg = Qcir.QuantumCircuit(qg)
+# for i in range(n):
+#     if MYans & (2 ** i):
+#         progg.x(i)
+# progg.append(ggate, qg[:])
+# for i in range(n):
+#     if MYans & (2 ** i):
+#         progg.x(i)
+# # print(progg)
+# progg.draw('mpl').savefig('ansg.png')
