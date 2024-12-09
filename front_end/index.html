@@ -108,7 +108,8 @@
                 if (response.ok) {
                     const result = await response.json();
                     console.log('服务器响应:', result);
-                    document.getElementById("result_text").appendChild(result);
+                    var resultTextElement = document.getElementById('result_text');
+                    if (resultTextElement) resultTextElement.textContent = result;
                 } else {
                     console.error('请求失败', response.status);
                 }
@@ -143,8 +144,8 @@
             <script>
                 loadImage('/ansf.png','image1');
                 loadImage('/ansg.png','image2');
-                loadImage('/ansf.png','image1');
-                loadImage('/ansg.png','image2');
+                // loadImage('/ansf.png','image1');
+                // loadImage('/ansg.png','image2');
             </script>
         </div>
     </div>
