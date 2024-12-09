@@ -49,9 +49,9 @@ def DJtry(fgate : Qcir.Gate, ggate : Qcir.Gate, n : int, fi : int, gi : int):
     prog.append(fgate, range(n, 3 * n))
     prog.h(range(n, 2 * n))
     prog.measure(range(n, 2 * n), cb)
-    if fi == 0 and gi == 0:
-        print(prog)
-        prog.draw('mpl').savefig('optP.png')
+    # if fi == 0 and gi == 0:
+    #     print(prog)
+    #     prog.draw('mpl').savefig('optP.png')
         # plt.pause(-1)
     # print(prog)
     job = StatevectorSampler().run([prog], shots = 1)
@@ -81,37 +81,67 @@ def getGate(mat : np.ndarray, n : int, swp = [], name  : str = "BF"):
         prog.swap(pr[0] + n, n + pr[1])
     prog.unitary(mat, range(n)).inverse()
     return prog.to_gate(label = name)
-n = 3
-plist = np.random.permutation(n).tolist()
-print("plist",plist)
-fli = np.random.permutation(range(2**n)).tolist()
-gli = []
-for i in range(2**n):
-    tmpi = fli[i]
-    gli.append(0)
-    for j in range(n):
-        if tmpi%2 == 1:
-            gli[i] += 2**plist[j]
-        tmpi = tmpi//2
-swp = []
-for i in range(n):
-    if plist[i] == i:
-        continue
-    for j in range(i+1,n):
-        if plist[j] != i:
+# n = 3
+# plist = np.random.permutation(n).tolist()
+# print("plist",plist)
+# fli = np.random.permutation(range(2**n)).tolist()
+# gli = []
+# for i in range(2**n):
+#     tmpi = fli[i]
+#     gli.append(0)
+#     for j in range(n):
+#         if tmpi%2 == 1:
+#             gli[i] += 2**plist[j]
+#         tmpi = tmpi//2
+# swp = []
+# for i in range(n):
+#     if plist[i] == i:
+#         continue
+#     for j in range(i+1,n):
+#         if plist[j] != i:
+#             continue
+#         swp.append([i,j])
+#         tmp = plist[j]
+#         plist[j] = plist[i]
+#         plist[i] = tmp
+# print("swp:", swp)
+# print("fli:",fli)
+# print("gli:",gli)
+def outputP(n : int, fli : list, gli : list) -> bool:
+    plist = [-1] * n
+    flis = [format(fli[i], '03b') for i in range(2**n)]
+    glis = [format(gli[i], '03b') for i in range(2**n)]
+    print(flis)
+    print(glis)
+    for i in range(2 ** n):
+        cnt = -1
+        for j in range(n):
+            if flis[i][j] == '1':
+                if cnt != -1:
+                    cnt = -1
+                    break
+                cnt = j
+        if cnt == -1:
             continue
-        swp.append([i,j])
-        tmp = plist[j]
-        plist[j] = plist[i]
-        plist[i] = tmp
-print("swp:", swp)
-print("fli:",fli)
-print("gli:",gli)
-matf = getMat(n,fli)
-matg = getMat(n,gli)
-print(np.int64(np.real(matf)))
-print(np.int64(np.real(matg)))
+        for j in range(n):
+            if glis[i][j] == '0':
+                continue
+            if plist[cnt] == -1:
+                plist[cnt] = j
+            else:
+                return False
+    print("plist", plist)
+    for i in range(2 ** n):
+        for j in range(n):
+            if glis[i][plist[j]] != flis[i][j]:
+                return False
+    matf = getMat(n,fli)
+    matg = getMat(n,gli)
+    print(np.int64(np.real(matf)))
+    print(np.int64(np.real(matg)))
 
-fgate = getGate(matf, n, name="F")
-ggate = getGate(matg, n, name="G")
-solve(fgate, ggate, n)
+    fgate = getGate(matf, n, name="F")
+    ggate = getGate(matg, n, name="G")
+    ans = solve(fgate, ggate, n)
+    print(ans)
+    return True

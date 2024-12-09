@@ -143,14 +143,10 @@ def inputN(n : int, fli : list, gli : list) -> bool:
     for i in range(n):
         if MYans & (2 ** i):
             progg.x(i)
-    progg.swap(0, 1)
-    progg.swap(0, 1)
     progg.append(ggate, qg[:])
     for i in range(n):
         if MYans & (2 ** i):
             progg.x(i)
-    progg.swap(0, 1)
-    progg.swap(0, 1)
     # print(progg)
     progg.draw('mpl').savefig('ansg.png')
     return True

@@ -60,6 +60,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
             self.wfile.write(b"404 Not Found")
 
     def do_POST(self):
+        print("PPOST")
         content_length = int(self.headers["Content-Length"])
 
         # 读取 POST 数据
@@ -71,16 +72,22 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
             json_data = json.loads(post_data)
             print("json", json_data)
             if json_data['type'] == 0:
+                res_str = "是N等价的"
                 suc = inputN.inputN(3, json_data['p1'], json_data['p2'])
-
+            else :
+                res_str = "是P等价的"
+                suc = outputP.outputP(3, json_data['p1'], json_data['p2'])
+            print("suc:", suc)
+            if suc:
+                res_str = "不" + res_str
             # 发送响应状态码
             self.send_response(200)
             self.send_header("Content-type", "application/json")
             self.end_headers()
 
             # 返回处理结果
-            # response = {"status": "success", "data": senddata}
-            # self.wfile.write(json.dumps(response).encode("utf-8"))
+            response = {"status": "success", "ok": suc}
+            self.wfile.write(json.dumps(res_str).encode("utf-8"))
         except json.JSONDecodeError:
             # 处理 JSON 解码错误
             self.send_response(400)

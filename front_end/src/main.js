@@ -198,7 +198,7 @@ function create() {
     confirm2.on('pointerdown', (pointer) => 
     {
         console.info("confirm2");
-        // post(1);
+        post(1);
     });
 }
 
