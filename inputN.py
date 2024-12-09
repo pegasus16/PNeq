@@ -40,7 +40,10 @@ def Simon(fgate : Qcir.Gate, ggate : Qcir.Gate, n : int):
     prog.append(fgate, range(n, 3 * n))
     prog.h(range(n, 2 * n))
     prog.measure(range(n, 2 * n), cb)
-    print(prog)
+    # print(prog)
+    # prog.draw('mpl').savefig('inpN.png')
+    # prog.draw('mpl').show()
+    # plt.pause(-1)
     # print(prog.draw('text'))
     
     job = StatevectorSampler().run([prog], shots = TRYCNT)
@@ -140,10 +143,14 @@ def inputN(n : int, fli : list, gli : list) -> bool:
     for i in range(n):
         if MYans & (2 ** i):
             progg.x(i)
+    progg.swap(0, 1)
+    progg.swap(0, 1)
     progg.append(ggate, qg[:])
     for i in range(n):
         if MYans & (2 ** i):
             progg.x(i)
+    progg.swap(0, 1)
+    progg.swap(0, 1)
     # print(progg)
     progg.draw('mpl').savefig('ansg.png')
     return True
@@ -189,3 +196,6 @@ def inputN(n : int, fli : list, gli : list) -> bool:
 #         progg.x(i)
 # # print(progg)
 # progg.draw('mpl').savefig('ansg.png')
+if __name__ == "__main__":
+    pass
+    # inputN(3, [0, 1, 2, 3, 4, 5, 6, 7], [0, 1, 2, 3, 4, 5, 6, 7])
