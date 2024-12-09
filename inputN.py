@@ -108,6 +108,21 @@ def getGate(mat : np.ndarray, n : int, oswp = [], ineg = [], name  : str = "BF")
         prog.x(i)
     return prog.to_gate(label = name)
 def inputN(n : int, fli : list, gli : list) -> bool:
+    matf = getMat(n,fli)
+    matg = getMat(n,gli)
+
+    fgate = getGate(matf, n, name="F")
+    ggate = getGate(matg, n, name="G")
+    
+    qf = QuantumRegister(n * 2, "q")
+    progf = Qcir.QuantumCircuit(qf)
+    progf.append(fgate, qf[:])
+    progf.draw('mpl').savefig('ansf.png')
+
+    qg = QuantumRegister(n * 2, "q")
+    progg = Qcir.QuantumCircuit(qg)
+    progg.append(ggate, qg[:])
+    progg.draw('mpl').savefig('ansg.png')
     for i in range(2 ** n):
         if gli[i] == fli[0]:
             neg = i
@@ -116,13 +131,8 @@ def inputN(n : int, fli : list, gli : list) -> bool:
     for i in range(2 ** n):
         if gli[i ^ neg] != fli[i]:
             return False
-    matf = getMat(n,fli)
-    matg = getMat(n,gli)
     # print(np.int64(np.real(matf)))
     # print(np.int64(np.real(matg)))
-
-    fgate = getGate(matf, n, name="F")
-    ggate = getGate(matg, n, name="G")
 
     import time
     nowT = time.time()
