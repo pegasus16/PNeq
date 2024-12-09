@@ -1,6 +1,5 @@
 import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
-import sys
 import os
 import inputN
 import outputP
@@ -78,7 +77,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
                 res_str = "是P等价的"
                 suc = outputP.outputP(3, json_data['p1'], json_data['p2'])
             print("suc:", suc)
-            if suc:
+            if not suc:
                 res_str = "不" + res_str
             # 发送响应状态码
             self.send_response(200)
@@ -86,7 +85,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
             self.end_headers()
 
             # 返回处理结果
-            response = {"status": "success", "ok": suc}
+            # response = {"status": "success", "ok": suc}
             self.wfile.write(json.dumps(res_str).encode("utf-8"))
         except json.JSONDecodeError:
             # 处理 JSON 解码错误

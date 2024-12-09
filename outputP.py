@@ -108,9 +108,22 @@ def getGate(mat : np.ndarray, n : int, swp = [], name  : str = "BF"):
 # print("fli:",fli)
 # print("gli:",gli)
 def outputP(n : int, fli : list, gli : list) -> bool:
+    matf = getMat(n,fli)
+    matg = getMat(n,gli)
+    fgate = getGate(matf, n, name="F")
+    ggate = getGate(matg, n, name="G")
+    qf = QuantumRegister(n * 2, "q")
+    progf = Qcir.QuantumCircuit(qf)
+    progf.append(fgate, qf[:])
+    progf.draw('mpl').savefig('ansf.png')
+
+    qg = QuantumRegister(n * 2, "q")
+    progg = Qcir.QuantumCircuit(qg)
+    progg.append(ggate, qg[:])
+    progg.draw('mpl').savefig('ansg.png')
     plist = [-1] * n
-    flis = [format(fli[i], '03b') for i in range(2**n)]
-    glis = [format(gli[i], '03b') for i in range(2**n)]
+    flis = [format(fli[i], '03b')[::-1] for i in range(2**n)]
+    glis = [format(gli[i], '03b')[::-1] for i in range(2**n)]
     print(flis)
     print(glis)
     for i in range(2 ** n):
@@ -135,13 +148,28 @@ def outputP(n : int, fli : list, gli : list) -> bool:
         for j in range(n):
             if glis[i][plist[j]] != flis[i][j]:
                 return False
-    matf = getMat(n,fli)
-    matg = getMat(n,gli)
     print(np.int64(np.real(matf)))
     print(np.int64(np.real(matg)))
 
-    fgate = getGate(matf, n, name="F")
-    ggate = getGate(matg, n, name="G")
     ans = solve(fgate, ggate, n)
     print(ans)
+    swp = []
+    for i in range(n):
+        if ans[i] == i:
+            continue
+        for j in range(i + 1, n):
+            if ans[j] == i:
+                swp.append([i, j])
+                ans[j] = ans[i]
+                ans[i] = i
+                break
+    print("swap", swp)
+    qg = QuantumRegister(n * 2, "q")
+    progg = Qcir.QuantumCircuit(qg)
+    for i in range(len(swp) - 1, -1, -1):
+        progg.swap(swp[i][0] + n, swp[i][1] + n)
+    progg.append(ggate, qg[:])
+    for i in range(len(swp)):
+        progg.swap(swp[i][0] + n, swp[i][1] + n)
+    progg.draw('mpl').savefig('ansg.png')
     return True
